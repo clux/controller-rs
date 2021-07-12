@@ -11,7 +11,7 @@ use kube_runtime::controller::{Context, Controller, ReconcilerAction};
 use maplit::hashmap;
 use prometheus::{
     default_registry, proto::MetricFamily, register_histogram_vec, register_int_counter,
-    HistogramOpts, HistogramVec, IntCounter,
+    HistogramOpts, HistogramVec, IntCounter, Exemplar
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -76,13 +76,12 @@ async fn reconcile(foo: Foo, ctx: Context<Data>) -> Result<ReconcilerAction, Err
         .map_err(Error::KubeError)?;
 
     let duration = start.elapsed().as_millis() as f64 / 1000.0;
-    //let ex = Exemplar::new_with_labels(duration, hashmap! {"trace_id".to_string() => trace_id});
+    let ex = Exemplar::new_with_labels(duration, hashmap! {"trace_id".to_string() => trace_id});
     ctx.get_ref()
         .metrics
         .reconcile_duration
         .with_label_values(&[])
-        .observe(duration);
-        //.observe_with_exemplar(duration, ex);
+        .observe_with_exemplar(duration, ex);
     ctx.get_ref().metrics.handled_events.inc();
     info!("Reconciled Foo \"{}\" in {}", name, ns);
 

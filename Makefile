@@ -39,8 +39,10 @@ tag-semver: build
 	fi
 
 # Helpers for using tempo as an otel collector
-forward-tempo:
+forward-tempo-agent:
 	kubectl port-forward -n monitoring service/grafana-agent-traces 55680:55680
+forward-tempo-chart:
+	kubectl port-forward -n monitoring service/promstack-tempo 55680:4317
 forward-tempo-metrics:
 	kubectl port-forward -n monitoring service/grafana-agent-traces 8080:8080
 check-tempo-metrics:

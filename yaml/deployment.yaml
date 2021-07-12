@@ -44,6 +44,9 @@ kind: Service
 metadata:
   name: foo-controller
   namespace: default
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
   labels:
     app: foo-controller
 spec:
